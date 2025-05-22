@@ -130,14 +130,14 @@ export default function HomePage() {
               </CardContent>
             </Card>
           </div>
-        )}
-
-        {error && (
+        )}        {error && (
           <Alert variant="destructive" className="animate-in fade-in slide-in-from-top-5 duration-300">
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
-        )}        {loading && (
+        )}
+        
+        {loading && (
           <Card className="shadow-lg border border-primary overflow-hidden animate-pulse bg-background">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2">
@@ -154,8 +154,7 @@ export default function HomePage() {
         )}
 
         {(text || image) && !loading && (
-          <Card className="shadow-xl border-primary border-2 overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300 bg-background">
-            <CardHeader className="pb-2 border-b">
+          <Card className="shadow-xl border-primary border-2 overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300 bg-background">            <CardHeader className="pb-2 border-b">
               <div className="flex items-center gap-2">
                 <Avatar className="h-8 w-8 border border-primary">
                   <AvatarImage src="/globe.svg" />
@@ -163,7 +162,8 @@ export default function HomePage() {
                 </Avatar>
                 <CardTitle className="text-lg font-bold">Generated Results</CardTitle>
               </div>
-            </CardHeader><CardContent className="space-y-6 pt-6">
+            </CardHeader>
+            <CardContent className="space-y-6 pt-6">
               {text && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -233,3 +233,4 @@ export default function HomePage() {
     </div>
   );
 }
+
