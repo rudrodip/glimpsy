@@ -4,8 +4,23 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useState } from "react";
 import { getResponse } from "@/actions";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "./ui/card";
-import { Loader2, Sparkles, Image as ImageIcon, Type, Send, Download, RefreshCw } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "./ui/card";
+import {
+  Loader2,
+  Sparkles,
+  Image as ImageIcon,
+  Type,
+  Send,
+  Download,
+  RefreshCw,
+} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Separator } from "./ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -18,15 +33,15 @@ export default function HomePage() {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  
+
   const handleSubmit = async () => {
     if (!prompt.trim()) return;
-    
+
     setLoading(true);
     setError("");
     const response = await getResponse(prompt);
     console.log(response);
-    
+
     if (response.text) {
       setText(response.text);
     }
@@ -34,16 +49,16 @@ export default function HomePage() {
     if (response.image) {
       setImage(response.image);
     }
-    
+
     setLoading(false);
     if (!response.text && !response.image) {
       setError("No content found in response");
     }
-  }
+  };
 
   // Handle pressing Enter key in the input field
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && prompt.trim() && !loading) {
+    if (e.key === "Enter" && prompt.trim() && !loading) {
       handleSubmit();
     }
   };
@@ -51,8 +66,8 @@ export default function HomePage() {
   // Download the generated image
   const downloadImage = () => {
     if (!image) return;
-    
-    const link = document.createElement('a');
+
+    const link = document.createElement("a");
     link.href = `data:image/png;base64,${image}`;
     link.download = `glimpsy-image-${Date.now()}.png`;
     document.body.appendChild(link);
@@ -63,9 +78,9 @@ export default function HomePage() {
   // Download the generated text
   const downloadText = () => {
     if (!text) return;
-    
-    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-    const link = document.createElement('a');
+
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `glimpsy-text-${Date.now()}.txt`;
     document.body.appendChild(link);
@@ -84,9 +99,11 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Navbar />
-      <div className="flex-1 w-full max-w-4xl mx-auto p-6 pt-20 flex flex-col gap-6">        {!text && !image && !loading && (
+      <div className="flex-1 w-full max-w-4xl mx-auto p-6 pt-20 flex flex-col gap-6">
+        {" "}
+        {!text && !image && !loading && (
           <div className="flex items-center justify-center min-h-[calc(100vh-10rem)]">
-            <Card className="w-full max-w-2xl bg-background shadow-xl border-2 border-primary">
+            <Card className="w-full max-w-2xl bg-background shadow-xl border-2">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <Sparkles className="h-6 w-6 text-primary" />
@@ -108,8 +125,8 @@ export default function HomePage() {
                     onKeyDown={handleKeyDown}
                     disabled={loading}
                   />
-                  <Button 
-                    onClick={handleSubmit} 
+                  <Button
+                    onClick={handleSubmit}
                     className="h-11"
                     disabled={loading || !prompt.trim()}
                     variant="default"
@@ -130,15 +147,18 @@ export default function HomePage() {
               </CardContent>
             </Card>
           </div>
-        )}        {error && (
-          <Alert variant="destructive" className="animate-in fade-in slide-in-from-top-5 duration-300">
+        )}{" "}
+        {error && (
+          <Alert
+            variant="destructive"
+            className="animate-in fade-in slide-in-from-top-5 duration-300"
+          >
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-        
         {loading && (
-          <Card className="shadow-lg border border-primary overflow-hidden animate-pulse bg-background">
+          <Card className="shadow-lg overflow-hidden animate-pulse bg-background mt-9">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-2">
                 <Skeleton className="h-6 w-6 rounded-full" />
@@ -147,23 +167,30 @@ export default function HomePage() {
             </CardHeader>
             <CardContent className="space-y-4 flex flex-col items-center justify-center p-12">
               <Loader2 className="h-12 w-12 animate-spin text-primary" />
-              <p className="text-lg font-medium text-center">Generating content...</p>
-              <p className="text-sm text-muted-foreground text-center">This might take a moment</p>
+              <p className="text-lg font-medium text-center">
+                Generating content...
+              </p>
+              <p className="text-sm text-muted-foreground text-center">
+                This might take a moment
+              </p>
             </CardContent>
           </Card>
         )}
-
         {(text || image) && !loading && (
-          <Card className="shadow-xl border-primary border-2 overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300 bg-background">            <CardHeader className="pb-2 border-b">
+          <Card className="shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300 mt-8">
+            {" "}
+            <CardHeader className="border-b">
               <div className="flex items-center gap-2">
                 <Avatar className="h-8 w-8 border border-primary">
                   <AvatarImage src="/globe.svg" />
                   <AvatarFallback>AI</AvatarFallback>
                 </Avatar>
-                <CardTitle className="text-lg font-bold">Generated Results</CardTitle>
+                <CardTitle className="text-lg font-bold">
+                  Generated Results
+                </CardTitle>
               </div>
             </CardHeader>
-            <CardContent className="space-y-6 pt-6">
+            <CardContent className="space-y-1">
               {text && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -171,23 +198,26 @@ export default function HomePage() {
                       <Type className="h-4 w-4 text-primary" />
                       <h3 className="text-sm font-medium">Generated Text</h3>
                     </div>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="h-8 gap-1" 
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 gap-1"
                       onClick={downloadText}
                     >
                       <Download className="h-3.5 w-3.5" />
                       <span className="text-xs">Download</span>
                     </Button>
-                  </div>                  <div className="bg-muted p-4 rounded-lg border border-border shadow-inner">
-                    <p className="text-pretty whitespace-pre-wrap leading-relaxed">{text}</p>
+                  </div>{" "}
+                  <div className="bg-muted p-4 rounded-lg border border-border shadow-inner">
+                    <p className="text-pretty whitespace-pre-wrap leading-relaxed">
+                      {text}
+                    </p>
                   </div>
                 </div>
               )}
-              
+
               {text && image && <Separator className="my-6" />}
-              
+
               {image && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -195,10 +225,10 @@ export default function HomePage() {
                       <ImageIcon className="h-4 w-4 text-primary" />
                       <h3 className="text-sm font-medium">Generated Image</h3>
                     </div>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="h-8 gap-1" 
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 gap-1"
                       onClick={downloadImage}
                     >
                       <Download className="h-3.5 w-3.5" />
@@ -206,26 +236,32 @@ export default function HomePage() {
                     </Button>
                   </div>
                   <div className="rounded-lg overflow-hidden border border-border shadow-md bg-muted">
-                    <img 
-                      src={`data:image/png;base64,${image}`} 
-                      alt="Generated" 
-                      className="max-w-full h-auto mx-auto object-contain" 
+                    <img
+                      src={`data:image/png;base64,${image}`}
+                      alt="Generated"
+                      className="w-1/2 h-auto mx-auto object-contain"
                     />
                   </div>
                 </div>
               )}
             </CardContent>
-            <CardFooter className="bg-muted pt-4 flex items-center justify-between">
-              <div className="text-xs text-muted-foreground">Generated based on prompt: "{prompt}"</div>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="gap-1" 
+            <CardFooter className="bg-muted flex items-center justify-between">
+              <div className="text-xs text-muted-foreground">
+                Generated based on prompt: "{prompt}"
+              </div>
+              <div>
+
+                   <Button
+                size="sm"
+                variant="outline"
+                className="gap-1"
                 onClick={handleReset}
               >
                 <RefreshCw className="h-3.5 w-3.5" />
-                <span>New</span>
+                New
               </Button>
+              </div>
+           
             </CardFooter>
           </Card>
         )}
@@ -233,4 +269,3 @@ export default function HomePage() {
     </div>
   );
 }
-
