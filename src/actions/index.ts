@@ -67,39 +67,42 @@ export async function saveWaveFile(
   });
 }
 
-export async function getAudioResponse(prompt: string) {
-  const ai = new GoogleGenAI({ apiKey: GEMINI_API_SECRET });
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash-preview-tts",
-    contents: [{ parts: [{ text: prompt }] }],
-    config: {
-      responseModalities: [Modality.AUDIO],
-      speechConfig: {
-        voiceConfig: {
-          prebuiltVoiceConfig: { voiceName: "Kore" },
+export async function generateAudio(prompt: string) {
+  try {
+    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash-preview-tts",
+      contents: [{ parts: [{ text: prompt }] }],
+      config: {
+        responseModalities: [Modality.AUDIO],
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: { voiceName: "Kore" },
+          },
         },
       },
-    },
-  });
+    });
 
-  if (!response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data) {
-    console.error("No content found in response");
-    throw new Error("No content found in response");
-  }
+    if (!response.candidates) {
+      throw new Error("No response from Gemini");
+    }
 
-  const part = response.candidates[0].content.parts[0];
-  const data = part.inlineData?.data;
-  const mimeType = part.inlineData?.mimeType || "audio/mpeg";
-  
-  console.log("Received audio with mimeType:", mimeType);
-  
-  if (!data) {
-    throw new Error("No audio data found in response");
+    if (!response.candidates[0]?.content?.parts) {
+      throw new Error("No content from Gemini");
+    }
+
+    const content = response.candidates[0]?.content?.parts[0];
+
+    const result = content.inlineData?.data;
+    const mimeType = content.inlineData?.mimeType;
+
+    return {
+      result,
+      mimeType,
+    };
+  } catch (error) {
+    console.error("Error generating audio:", error);
+    throw error;
   }
-  
-  // Just pass the base64 data directly - no need to convert to Buffer and back
-  return {
-    audioData: data, // This is already base64 encoded from Gemini API
-    mimeType: mimeType
-  };
 }

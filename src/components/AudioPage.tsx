@@ -1,67 +1,104 @@
 "use client";
 
 import { Input } from "./ui/input";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
-import { Howl } from "howler";
-import { getAudioResponse } from "@/actions";
+import { generateAudio } from "@/actions";
+
+function createWavBuffer(
+  pcmData: Buffer,
+  sampleRate = 24000,
+  channels = 1,
+  bitsPerSample = 16
+) {
+  const byteRate = (sampleRate * channels * bitsPerSample) / 8;
+  const blockAlign = (channels * bitsPerSample) / 8;
+  const dataSize = pcmData.length;
+  const fileSize = 36 + dataSize;
+
+  const wavBuffer = Buffer.alloc(44 + dataSize);
+  let offset = 0;
+
+  // RIFF header
+  wavBuffer.write("RIFF", offset);
+  offset += 4;
+  wavBuffer.writeUInt32LE(fileSize, offset);
+  offset += 4;
+  wavBuffer.write("WAVE", offset);
+  offset += 4;
+
+  // fmt chunk
+  wavBuffer.write("fmt ", offset);
+  offset += 4;
+  wavBuffer.writeUInt32LE(16, offset);
+  offset += 4; // chunk size
+  wavBuffer.writeUInt16LE(1, offset);
+  offset += 2; // PCM format
+  wavBuffer.writeUInt16LE(channels, offset);
+  offset += 2;
+  wavBuffer.writeUInt32LE(sampleRate, offset);
+  offset += 4;
+  wavBuffer.writeUInt32LE(byteRate, offset);
+  offset += 4;
+  wavBuffer.writeUInt16LE(blockAlign, offset);
+  offset += 2;
+  wavBuffer.writeUInt16LE(bitsPerSample, offset);
+  offset += 2;
+
+  // data chunk
+  wavBuffer.write("data", offset);
+  offset += 4;
+  wavBuffer.writeUInt32LE(dataSize, offset);
+  offset += 4;
+  pcmData.copy(wavBuffer, offset);
+
+  return wavBuffer;
+}
 
 export default function AudioPage() {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const [audioMimeType, setAudioMimeType] = useState<string>("audio/mpeg");
   const [isPlaying, setIsPlaying] = useState(false);
-  const [audioBase64, setAudioBase64] = useState<string | null>(null);
-  const soundRef = useRef<Howl | null>(null);
+  const [audioResult, setAudioResult] = useState<string | undefined>(undefined);
+  const [mimeType, setMimeType] = useState<string | undefined>(undefined);
 
-  // Cleanup effect to revoke URL when component unmounts
-  useEffect(() => {
-    return () => {
-      if (audioUrl) {
-        URL.revokeObjectURL(audioUrl);
-      }
-    };
-  }, [audioUrl]);
+  const handleDownload = () => {
+    if (!audioResult || !mimeType) return;
+
+    const pcmBuffer = Buffer.from(audioResult, "base64");
+    const wavBuffer = createWavBuffer(pcmBuffer);
+    const blob = new Blob([wavBuffer], { type: "audio/wav" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "audio.wav";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handlePlay = () => {
+    if (!audioResult || !mimeType) return;
+
+    const pcmBuffer = Buffer.from(audioResult, "base64");
+    const wavBuffer = createWavBuffer(pcmBuffer);
+    const blob = new Blob([wavBuffer], { type: "audio/wav" });
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.play();
+    audio.onended = () => URL.revokeObjectURL(url);
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
     setError("");
-    setAudioUrl(null);
-    setAudioBase64(null);
+    setAudioResult(undefined);
+    setMimeType(undefined);
     setIsPlaying(false);
     try {
-    const response  = await getAudioResponse(prompt);
-      if (!response) {
-        setError("No audio data found in response");
-        return;
-      }
-      const audioData = response.audioData;
-      const mimeType = response.mimeType || "audio/mpeg";
-
-      // Create a Blob URL for the audio data
-      const blob = new Blob([audioData], { type: mimeType });
-      const url = URL.createObjectURL(blob);
-      setAudioUrl(url);
-      setAudioMimeType(mimeType);
-      setAudioBase64(audioData);
-      setIsPlaying(false);
-      soundRef.current = new Howl({
-        src: [url],
-        format: [mimeType.split("/")[1]],
-        onplay: () => {
-          setIsPlaying(true);
-        },
-        onpause: () => {
-          setIsPlaying(false);
-        },
-        onend: () => {
-          setIsPlaying(false);
-        },
-      });
-      soundRef.current.play();
-      setIsPlaying(true);
-      
+      const { result, mimeType } = await generateAudio(prompt);
+      setAudioResult(result);
+      setMimeType(mimeType);
     } catch (error) {
       console.error("Error generating audio:", error);
       setError("Failed to generate audio");
@@ -79,32 +116,13 @@ export default function AudioPage() {
       />
       <Button onClick={handleSubmit}>Submit</Button>{" "}
       {loading && <p>Loading...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}{" "}      {soundRef.current && (
-        <div className="mt-4 flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <Button 
-              onClick={() => {
-                if (isPlaying) {
-                  soundRef.current?.pause();
-                  setIsPlaying(false);
-                } else {
-                  soundRef.current?.play();
-                  setIsPlaying(true);
-                }
-              }}
-              variant="outline"
-            >
-              {isPlaying ? "Pause" : "Play"}
-            </Button>
-            <span>{isPlaying ? "Playing audio..." : "Audio ready"}</span>
-          </div>
-          {/* Keep the native audio player as fallback */}
-          {audioUrl && (
-            <audio controls className="w-full">
-              <source src={audioUrl} type={audioMimeType} />
-              Your browser does not support the audio element.
-            </audio>
-          )}
+      {error && <p style={{ color: "red" }}>{error}</p>}{" "}
+      {audioResult && (
+        <div>
+          <Button onClick={handleDownload}>Download</Button>{" "}
+          <Button onClick={handlePlay} disabled={isPlaying}>
+            {isPlaying ? "Playing..." : "Play"}
+          </Button>
         </div>
       )}
     </div>
