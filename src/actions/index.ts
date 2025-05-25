@@ -106,3 +106,22 @@ export async function generateAudio(prompt: string) {
     throw error;
   }
 }
+
+export async function generateText(prompt: string) {
+  try {
+    const ai = new GoogleGenAI({ apiKey: GEMINI_API_SECRET });
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-pro-preview",
+      contents: [{ parts: [{ text: prompt }] }],
+      config: {
+        responseModalities: [Modality.TEXT],
+      },
+    });
+     console.log(response);
+    return response.text;
+  } catch (error) {
+    console.error("Error generating text:", error);
+    throw error;
+  }
+}
