@@ -138,133 +138,140 @@ export default function AudioPage() {
     if (e.key === "Enter" && prompt.trim() && !loading) {
       handleSubmit();
     }
-  };
-
-  return (
-    <div className="min-h-screen bg-background">
+  };  return (
+    <div className="flex flex-col min-h-screen bg-background">
       <Navbar />
-      
-      {/* Center content when no results, top-align when results exist */}
-      <div className={`${audioResult || loading ? 'pt-8' : 'min-h-screen flex items-center justify-center'}`}>
-        <div className="max-w-2xl mx-auto px-6 w-full">
-          
-          {/* Header - only show when centered */}
-          {!audioResult && !loading && (
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-                <AudioLines className="h-8 w-8 text-primary" />
-              </div>
-              <h1 className="text-3xl font-bold mb-2">AI Audio Generator</h1>
-              <p className="text-muted-foreground">
-                Convert your text to high-quality audio
-              </p>
-            </div>
-          )}
-
-          {/* Input Section */}
-          <Card className="mb-6">
-            <CardContent className="p-6">
-              <div className="flex gap-3">
-                <div className="relative flex-1">
-                  <Input
-                    type="text"
-                    className="h-11 pl-10"
-                    placeholder="Enter text to convert to audio..."
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    disabled={loading}
-                  />
-                  <Mic className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className="flex-1 w-full max-w-4xl mx-auto p-6 pt-20 flex flex-col gap-6">
+        {!audioResult && !loading && (
+          <div className="flex items-center justify-center min-h-[calc(100vh-10rem)]">
+            <Card className="w-full max-w-2xl bg-background shadow-xl border-2">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <AudioLines className="h-6 w-6 text-primary" />
+                  <CardTitle className="text-2xl font-bold text-center text-primary">
+                    AI Audio Generator
+                  </CardTitle>
                 </div>
-                <Button
-                  onClick={handleSubmit}
-                  className="h-11 px-6"
-                  disabled={loading || !prompt.trim()}
-                >
-                  {loading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Error Alert */}
-          {error && (
-            <Alert variant="destructive" className="mb-6">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-          {/* Loading State */}
-          {loading && (
-            <Card className="mb-6">
-              <CardContent className="p-8">
-                <div className="flex flex-col items-center space-y-4">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                  <div className="text-center">
-                    <h3 className="font-semibold">Generating audio...</h3>
-                    <p className="text-sm text-muted-foreground">This may take a moment</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Audio Results */}
-          {audioResult && !loading && (
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-full bg-green-100 dark:bg-green-900">
-                    <Volume2 className="h-4 w-4 text-green-600 dark:text-green-400" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">Audio Generated</CardTitle>
-                    <CardDescription>Ready to play or download</CardDescription>
-                  </div>
-                </div>
+                <CardDescription className="text-center text-muted-foreground">
+                  Convert your text to high-quality audio with advanced AI
+                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-3 bg-muted rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-1">Generated from:</p>
-                  <p className="text-sm font-medium">"{prompt}"</p>
-                </div>
-                
-                <div className="flex gap-3">
+              <CardContent>
+                <div className="flex gap-3 items-center">
+                  <div className="relative flex-1">
+                    <Input
+                      type="text"
+                      className="flex-1 h-11 pl-12 shadow-sm"
+                      placeholder="Enter text to convert to audio..."
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      disabled={loading}
+                    />
+                    <Mic className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  </div>
                   <Button
-                    onClick={handlePlay}
-                    disabled={isPlaying}
-                    className="flex-1"
+                    onClick={handleSubmit}
+                    className="h-11"
+                    disabled={loading || !prompt.trim()}
+                    variant="default"
                   >
-                    {isPlaying ? (
+                    {loading ? (
                       <>
-                        <div className="mr-2 w-2 h-2 rounded-full bg-current animate-pulse" />
-                        Playing...
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Processing
                       </>
                     ) : (
                       <>
-                        <Play className="mr-2 h-4 w-4" />
-                        Play
+                        <Send className="mr-2 h-4 w-4" />
+                        Generate
                       </>
                     )}
-                  </Button>
-                  
-                  <Button onClick={handleDownload} variant="outline">
-                    <Download className="mr-2 h-4 w-4" />
-                    Download
                   </Button>
                 </div>
               </CardContent>
             </Card>
-          )}
-          
-        </div>
+          </div>
+        )}        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}        {loading && (
+          <div className="flex items-center justify-center min-h-[calc(100vh-10rem)]">
+            <Card className="w-full max-w-2xl bg-background shadow-xl border-2">
+              <CardContent className="p-8">
+                <div className="flex flex-col items-center space-y-6">
+                  <div className="relative">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                  <div className="text-center space-y-2">
+                    <h3 className="text-lg font-semibold">Generating audio...</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Our AI is crafting your audio. This may take a moment.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}{audioResult && !loading && (
+              <div className="flex items-center justify-center min-h-[calc(100vh-10rem)]">
+                <Card className="w-full max-w-2xl bg-card shadow-xl border border-border/40">
+                  <CardHeader>
+                    <div className="flex items-center gap-3">
+                      <Volume2 className="h-6 w-6 text-primary" />
+                      <div>
+                        <CardTitle className="text-xl">Audio Generated</CardTitle>
+                        <CardDescription>
+                          Ready to play or download
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="p-4 bg-background/80 rounded-lg border border-border/40">
+                      <p className="text-sm text-muted-foreground mb-2 font-medium">
+                        Generated from:
+                      </p>
+                      <p className="text-sm font-medium italic">
+                        "{prompt}"
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button
+                        onClick={handlePlay}
+                        disabled={isPlaying}
+                        className="flex-1 h-11"
+                        variant="default"
+                      >
+                        {isPlaying ? (
+                          <>
+                            <div className="mr-2 w-3 h-3 rounded-full bg-current animate-pulse" />
+                            Playing...
+                          </>
+                        ) : (
+                          <>
+                            <Play className="mr-2 h-4 w-4" />
+                            Play Audio
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        onClick={handleDownload}
+                        variant="outline"
+                        className="h-11"
+                      >
+                        <Download className="mr-2 h-4 w-4" />
+                        Download
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
       </div>
     </div>
   );
