@@ -41,12 +41,34 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-inter);
+  --shine-degree: 120deg;
+  --shine-color: rgba(3 105 161 / 0.5);
+  --shine-effect: linear-gradient(
+    var(--shine-degree),
+    transparent,
+    var(--shine-color),
+    transparent
+  );
+  --shine-transition: all 0.75s ease-in-out;
+  --animate-shiny-text: shiny-text 8s infinite;
+  @keyframes shiny-text {
+  0%, 90%, 100% {
+    background-position: calc(-100% - var(--shiny-width)) 0;
+    }
+  30%, 60% {
+    background-position: calc(100% + var(--shiny-width)) 0;
+    }
+  }
   --animate-gradient: gradient 8s linear infinite;
   @keyframes gradient {
   to {
     background-position: var(--bg-size, 300%) 0;
     }
   }
+  --sweep-base-color: #374151;
 }
 
 :root {
@@ -87,6 +109,7 @@
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
+  --sweep-base-color: #e5e7eb;
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
@@ -118,6 +141,10 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -125,6 +152,16 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+::-moz-selection {
+  color: var(--background);
+  background: var(--foreground);
+}
+
+::selection {
+  color: var(--background);
+  background: var(--foreground);
 }
 
 /* Animation Keyframes */
@@ -184,4 +221,95 @@
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+.primary-gradient {
+  @apply bg-linear-to-r from-pink-400 dark:from-pink-500 via-fuchsia-400 dark:via-fuchsia-500 to-rose-400 dark:to-rose-500;
+}
+
+
+.gradient-text {
+  @apply text-transparent bg-clip-text;
+}
+
+@keyframes gradient-flow-left-to-right {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+.gradient-flow-left-to-right {
+  background-size: 200% 200%;
+  animation: gradient-flow-left-to-right 3s ease infinite alternate;
+}
+
+.enhance-gradient {
+  position: relative;
+  background: linear-gradient(
+    90deg,
+    var(--sweep-base-color) 0%,
+    var(--sweep-base-color) 10%,
+    #f472b6 30%,
+    #c084fc 50%,
+    #fb7185 70%,
+    var(--sweep-base-color) 90%,
+    var(--sweep-base-color) 100%
+  );
+}
+
+.enhance-gradient-text {
+  @apply text-transparent bg-clip-text;
+}
+
+@keyframes enhance-gradient-animation {
+  0% { background-position: 100% 0 }
+  100% { background-position: -100% 0 }
+}
+
+.enhance-gradient-animation {
+  background-size: 200% 100%;
+  animation: enhance-gradient-animation 2s linear infinite;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 5px;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+::view-transition-group(root) {
+  animation-duration: 0.5s;
+  animation-timing-function: var(--expo-in);
+}
+
+::view-transition-new(root) {
+  animation-name: reveal;
+}
+
+::view-transition-old(root),
+.dark::view-transition-old(root) {
+  animation: none;
+  z-index: -1;
+}
+@keyframes reveal {
+  from {
+    clip-path: polygon(50% 0%, 50% 0%, 50% 100%, 50% 100%);
+  }
+  to {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
 }
