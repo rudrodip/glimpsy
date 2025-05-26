@@ -1,12 +1,14 @@
 "use server";
-import wav from "wav";
+
+import { MODE_OPTIONS } from "@/lib/constants";
+import { ModeValue } from "@/types";
 import { GoogleGenAI, Modality } from "@google/genai";
+import { promptSchema } from "@/lib/schema";
+import z from "zod";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
-const GEMINI_API_SECRET = process.env.GEMINI_API_SECRET || "";
-if (!GEMINI_API_KEY || !GEMINI_API_SECRET) {
-  throw new Error("Missing Gemini API credentials");
-}
+
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 export async function getResponse(prompt: string) {
   const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
@@ -44,27 +46,6 @@ export async function getResponse(prompt: string) {
   }
 
   return result;
-}
-export async function saveWaveFile(
-  filename: string,
-  pcmData: Buffer,
-  channels = 1,
-  rate = 24000,
-  sampleWidth = 2
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const writer = new wav.FileWriter(filename, {
-      channels,
-      sampleRate: rate,
-      bitDepth: sampleWidth * 8,
-    });
-
-    writer.on("finish", resolve);
-    writer.on("error", reject);
-
-    writer.write(pcmData);
-    writer.end();
-  });
 }
 
 export async function generateAudio(prompt: string) {
@@ -109,7 +90,7 @@ export async function generateAudio(prompt: string) {
 
 export async function generateText(prompt: string) {
   try {
-    const ai = new GoogleGenAI({ apiKey: GEMINI_API_SECRET });
+    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-pro-preview",
@@ -124,4 +105,48 @@ export async function generateText(prompt: string) {
     console.error("Error generating text:", error);
     throw error;
   }
+}
+
+export async function enhanceImagePrompt(prompt: string) {
+  const systemPrompt = `
+  Glimpsy is a creative assistant that allows you to create images and text to speech and respond to user queries.
+  Your work is to enhance the prompt only for text to image mode to make it more creative and engaging and to make it more specific to the mode. Make sure the AI is able to understand the prompt clearly.
+
+  Restrictions:
+  - Don't make it too long.
+  - Don't make it too short.
+  - Don't make it too vague.
+  - Don't use jargons
+  - Don't use complex words.
+  - Don't use emojis.
+  - Don't use special characters.
+  - Don't use markdown.
+  - Don't use html.
+  - Don't use code.
+
+  Instructions:
+  - It should be in the same language as the user prompt.
+  - It should be concise, and plain text. No markdown or other formatting.
+  - It should be specific to the mode.
+  - It should be creative and engaging.
+  - Use simple words and sentences.
+
+  It should feel natural and human like.
+
+  User prompt: ${prompt}
+
+  Just output the enhanced prompt, no other text. Make in very concise and instructive.
+  `
+
+  const response = await ai.models.generateContent({
+    model: "gemini-2.0-flash",
+    contents: systemPrompt,
+  });
+
+  return response.text?.trim();
+}
+
+export async function generateResponse(data: z.infer<typeof promptSchema>) {
+  const { prompt, mode } = data;
+  return { data: [], text: "", mode: mode };
 }
