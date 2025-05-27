@@ -68,7 +68,6 @@
     background-position: var(--bg-size, 300%) 0;
     }
   }
-  --sweep-base-color: #374151;
 }
 
 :root {
@@ -109,7 +108,6 @@
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
-  --sweep-base-color: #e5e7eb;
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
@@ -247,13 +245,13 @@ html {
   position: relative;
   background: linear-gradient(
     90deg,
-    var(--sweep-base-color) 0%,
-    var(--sweep-base-color) 10%,
+    var(--foreground) 0%,
+    var(--foreground) 10%,
     #f472b6 30%,
     #c084fc 50%,
     #fb7185 70%,
-    var(--sweep-base-color) 90%,
-    var(--sweep-base-color) 100%
+    var(--foreground) 90%,
+    var(--foreground) 100%
   );
 }
 
