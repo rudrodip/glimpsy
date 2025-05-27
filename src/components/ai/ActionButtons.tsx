@@ -2,20 +2,20 @@
 
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ArrowUp, Sparkles } from "lucide-react";
+import { ArrowUp, Sparkles, Square } from "lucide-react";
 import { ModeValue } from "@/types";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 import { useAI } from "./ai-context";
 
 export function ActionButtons() {
-  const { currentPrompt, currentMode, enhancing, handleEnhancePrompt } = useAI();
+  const { currentPrompt, currentMode, enhancing, handleEnhancePrompt, canStop, handleStop, isGeneratingResponse } = useAI();
   const isMacOs = navigator.userAgent.includes("Mac") || navigator.userAgent.includes("Macintosh");
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const isModifierPressed = isMacOs ? event.metaKey : event.ctrlKey;
-      
+
       if (isModifierPressed && event.key.toLowerCase() === 'i' && currentMode === ModeValue.TEXT_TO_IMAGE && currentPrompt && !enhancing) {
         event.preventDefault();
         handleEnhancePrompt();
@@ -36,7 +36,7 @@ export function ActionButtons() {
                 type="button"
                 variant="ghost"
                 size="sm"
-                disabled={!currentPrompt || enhancing}
+                disabled={!currentPrompt || enhancing || isGeneratingResponse}
                 className={cn("aspect-square p-0 size-8 group/enhance", {
                   "cursor-not-allowed hover:bg-transparent text-muted-foreground hover:text-muted-foreground disabled:pointer-events-auto disabled:opacity-85": !currentPrompt,
                   "cursor-pointer": currentPrompt,
@@ -62,17 +62,35 @@ export function ActionButtons() {
           </Tooltip>
         </TooltipProvider>
       )}
-      <Button
-        type="submit"
-        variant={currentPrompt ? "default" : "outline"}
-        disabled={!currentPrompt || enhancing}
-        className={cn("aspect-square p-0 size-8", {
-          "cursor-not-allowed bg-muted hover:bg-muted text-muted-foreground hover:text-muted-foreground disabled:pointer-events-auto disabled:opacity-85": !currentPrompt,
-          "cursor-pointer": currentPrompt,
-        })}
-      >
-        <ArrowUp />
-      </Button>
+      {canStop ? (
+        <Button
+          className="gap-2 px-2"
+          size="sm"
+          onClick={(e) => {
+            e.preventDefault();
+            handleStop();
+          }}
+        >
+          <div className="border-2 border-background rounded-full aspect-square p-1 flex items-center justify-center">
+            <Square className="size-2 fill-current" />
+          </div>
+          <span>Stop</span>
+        </Button>
+      )
+        :
+        (
+          <Button
+            type="submit"
+            variant={currentPrompt ? "default" : "outline"}
+            disabled={!currentPrompt || enhancing}
+            className={cn("aspect-square p-0 size-8", {
+              "cursor-not-allowed bg-muted hover:bg-muted text-muted-foreground hover:text-muted-foreground disabled:pointer-events-auto disabled:opacity-85": !currentPrompt,
+              "cursor-pointer": currentPrompt,
+            })}
+          >
+            <ArrowUp />
+          </Button>
+        )}
     </div>
   );
 } 
