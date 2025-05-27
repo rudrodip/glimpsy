@@ -103,6 +103,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --enhance-gradient-first: #be185d;
+  --enhance-gradient-second: #7c3aed;
+  --enhance-gradient-third: #be123c;
 }
 
 .dark {
@@ -137,6 +140,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --enhance-gradient-first: #f472b6;
+  --enhance-gradient-second: #c084fc;
+  --enhance-gradient-third: #fb7185;
 }
 
 html {
@@ -247,9 +253,9 @@ html {
     90deg,
     var(--foreground) 0%,
     var(--foreground) 10%,
-    #f472b6 30%,
-    #c084fc 50%,
-    #fb7185 70%,
+    var(--enhance-gradient-first) 30%,
+    var(--enhance-gradient-second) 50%,
+    var(--enhance-gradient-third) 70%,
     var(--foreground) 90%,
     var(--foreground) 100%
   );
