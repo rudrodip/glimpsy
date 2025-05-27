@@ -268,7 +268,7 @@ html {
 
 .enhance-gradient-animation {
   background-size: 200% 100%;
-  animation: enhance-gradient-animation 2s linear infinite;
+  animation: enhance-gradient-animation 1s linear infinite;
 }
 
 ::-webkit-scrollbar {
