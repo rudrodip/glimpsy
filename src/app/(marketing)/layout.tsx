@@ -1,3 +1,5 @@
+import { Navbar } from "@/components/Navbar";
+
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative w-full min-h-screen flex flex-col">
@@ -69,6 +71,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
           mixBlendMode: 'overlay'
         }}
       ></div>
+      <Navbar />
       {children}
     </div>
   )

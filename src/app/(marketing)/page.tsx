@@ -1,9 +1,9 @@
-import HomePage from "@/components/HomePage";
+import HeroSection from "@/components/hero";
 
 export default function Home() {
   return (
    <div className="space-y-10">
-    <HomePage/>
+    <HeroSection/>
    </div>
   );
 }

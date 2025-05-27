@@ -7,20 +7,21 @@ import { AnimatedBorderCard } from "../animated-border-card";
 import { PromptInput } from "./PromptInput";
 import { ModeSelector } from "./ModeSelector";
 import { ActionButtons } from "./ActionButtons";
-import { ExamplePrompts } from "./ExamplePrompts";
 import { useAI } from "./ai-context";
+import { cn } from "@/lib/utils";
 
 type PromptFormData = z.infer<typeof promptSchema>;
 
 interface PromptFormProps {
   onSubmit: (data: PromptFormData) => Promise<void>;
+  className?: string;
 }
 
-export function PromptForm({ onSubmit }: PromptFormProps) {
+export function PromptForm({ onSubmit, className }: PromptFormProps) {
   const { form, onFormSubmit } = useAI();
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    <div className={cn("w-full max-w-3xl mx-auto", className)}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onFormSubmit(onSubmit))} className="space-y-8">
           <AnimatedBorderCard
@@ -35,8 +36,6 @@ export function PromptForm({ onSubmit }: PromptFormProps) {
               </div>
             </div>
           </AnimatedBorderCard>
-          
-          <ExamplePrompts />
         </form>
       </Form>
     </div>

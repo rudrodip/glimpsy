@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { EXAMPLES } from "@/lib/constants";
 import { useAI } from "./ai-context";
+import { cn } from "@/lib/utils";
 
-export function ExamplePrompts() {
+export function ExamplePrompts({ className }: { className?: string }) {
   const { isExampleSelected, handleExampleSelect, handleExampleClose } = useAI();
 
   const handleExampleClick = (example: typeof EXAMPLES[number]) => {
@@ -13,7 +14,7 @@ export function ExamplePrompts() {
   };
 
   return (
-    <div className="w-full flex items-center justify-center gap-4">
+    <div className={cn("w-full flex items-center justify-center gap-4", className)}>
       {EXAMPLES.map((example) => (
         <Button
           key={example.prompt}

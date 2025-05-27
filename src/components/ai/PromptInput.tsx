@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { useAI } from "./ai-context";
 
 export const PromptInput = () => {
-  const { form, enhancing, textAreaRef, currentPrompt, currentMode, onFormSubmit } = useAI();
+  const { form, enhancing, textAreaRef, currentPrompt, currentMode } = useAI();
   const { setValue } = form;
 
   useEffect(() => {
