@@ -63,15 +63,9 @@ export default function ExamplePage() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Navbar />
+    <div className="flex flex-col min-h-screen">
       {/* Hero Section with animation */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 animate-gradient-slow"></div>
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        </div>
-
         {/* Floating elements */}
         <div
           className="absolute top-20 left-[10%] w-12 h-12 rounded-full bg-primary/10 animate-float"

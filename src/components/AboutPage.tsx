@@ -25,15 +25,11 @@ import {
   UsersIcon,
   StarIcon,
 } from "lucide-react";
-import { Navbar } from "./Navbar";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
+    <div className="min-h-screen">
       <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-purple-50/50 dark:from-blue-950/20 dark:to-purple-950/20" />
         <div className="relative max-w-5xl mx-auto px-6 py-24">
           <div className="text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
