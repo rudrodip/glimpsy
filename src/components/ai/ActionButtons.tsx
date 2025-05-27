@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { ArrowUp, Sparkles } from "lucide-react";
 import { ModeValue } from "@/types";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 interface ActionButtonsProps {
   prompt: string;
@@ -14,6 +15,22 @@ interface ActionButtonsProps {
 }
 
 export function ActionButtons({ prompt, mode, enhancing, onEnhance }: ActionButtonsProps) {
+  const isMacOs = navigator.userAgent.includes("Mac") || navigator.userAgent.includes("Macintosh");
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isModifierPressed = isMacOs ? event.metaKey : event.ctrlKey;
+      
+      if (isModifierPressed && event.key.toLowerCase() === 'i' && mode === ModeValue.TEXT_TO_IMAGE && prompt && !enhancing) {
+        event.preventDefault();
+        onEnhance();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isMacOs, mode, prompt, enhancing, onEnhance]);
+
   return (
     <div className="flex items-center gap-1">
       {mode === ModeValue.TEXT_TO_IMAGE && (
@@ -39,8 +56,13 @@ export function ActionButtons({ prompt, mode, enhancing, onEnhance }: ActionButt
                 )} />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p>{prompt ? "Enhance your prompt" : "Enter your prompt first"}</p>
+            <TooltipContent side="bottom" className="px-2">
+              <div className="flex items-center gap-2">
+                <p>{prompt ? "Enhance your prompt" : "Enter your prompt first"}</p>
+                <p className="text-xs px-1 py-0.5 rounded bg-linear-to-r from-rose-400 to-fuchsia-400 gradient-flow-left-to-right">
+                  {isMacOs ? "⌘" : "Ctrl"} + I
+                </p>
+              </div>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
