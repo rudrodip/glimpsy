@@ -96,7 +96,7 @@ export function PromptForm({ onSubmit }: PromptFormProps) {
             className="w-full p-px rounded-[11px]"
             gradientSize={150}
           >
-            <div id="chatbox" className="w-full p-2 rounded-lg bg-card">
+            <div id="chatbox" className="w-full p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800">
               <PromptInput
                 ref={textAreaRef}
                 form={form}
