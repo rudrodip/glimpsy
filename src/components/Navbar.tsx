@@ -1,9 +1,7 @@
-"use client";
-
 import Link from "next/link";
 import ModeToggle from "./theme-toggle";
-import { Button } from "./ui/button";
 import Image from "next/image";
+import Socials from "@/components/socials";
 
 export function Navbar() {
   return (
@@ -32,21 +30,9 @@ export function Navbar() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Dashboard
-          </Link>
-          <Button
-            asChild
-            size="sm"
-            className="h-8 px-3"
-          >
-            <Link href="/">Create</Link>
-          </Button>
-          <ModeToggle className="rounded-full size-8" />
+        <div className="flex items-center gap-2">
+          <Socials />
+          <ModeToggle className="rounded-full size-10 bg-transparent" variant="ghost" />
         </div>
       </div>
     </div>
