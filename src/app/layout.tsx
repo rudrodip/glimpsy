@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/lib/config/site.config";
 import { Toaster } from "@/components/ui/sonner";
+import { AIProvider } from "@/components/ai";
 
 const fontSans = Geist({
   variable: "--font-geist-sans",
@@ -89,8 +90,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster position="top-right" richColors />
-          {children}
+          <AIProvider>
+            <Toaster position="top-right" richColors />
+            {children}
+          </AIProvider>
         </ThemeProvider>
       </body>
     </html>

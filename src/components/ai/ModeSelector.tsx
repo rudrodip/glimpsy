@@ -1,25 +1,20 @@
 "use client";
 
-import { UseFormReturn } from "react-hook-form";
 import { Select, SelectItem, SelectContent, SelectTrigger } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ModeValue } from "@/types";
 import { MODE_OPTIONS } from "@/lib/constants";
+import { useAI } from "./ai-context";
 
-interface ModeSelectorProps {
-  form: UseFormReturn<{ prompt: string; mode: ModeValue }>;
-  onModeChange: (mode: ModeValue) => void;
-}
-
-export function ModeSelector({ form, onModeChange }: ModeSelectorProps) {
-  const currentMode = form.watch("mode");
+export function ModeSelector() {
+  const { currentMode, handleModeChange } = useAI();
   const selectedMode = MODE_OPTIONS.find(option => option.value === currentMode);
 
   return (
     <div className="flex items-center gap-2">
       <Select
         value={currentMode}
-        onValueChange={(value) => onModeChange(value as ModeValue)}
+        onValueChange={(value) => handleModeChange(value as ModeValue)}
       >
         <SelectTrigger
           className="gap-2 border-none bg-transparent dark:bg-transparent hover:bg-muted shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-2"

@@ -2,22 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import { ModeValue } from "@/types";
 import { EXAMPLES } from "@/lib/constants";
+import { useAI } from "./ai-context";
 
-interface ExamplePromptsProps {
-  isExampleSelected: boolean;
-  onExampleSelect: (prompt: string, mode: ModeValue) => void;
-  onExampleClose: () => void;
-}
+export function ExamplePrompts() {
+  const { isExampleSelected, handleExampleSelect, handleExampleClose } = useAI();
 
-export function ExamplePrompts({ 
-  isExampleSelected, 
-  onExampleSelect, 
-  onExampleClose 
-}: ExamplePromptsProps) {
   const handleExampleClick = (example: typeof EXAMPLES[number]) => {
-    onExampleSelect(example.prompt, example.mode);
+    handleExampleSelect(example.prompt, example.mode);
   };
 
   return (
@@ -41,7 +33,7 @@ export function ExamplePrompts({
           size="sm"
           className="p-0 aspect-square rounded-full size-8 bg-muted hover:bg-muted/50"
           variant="outline"
-          onClick={onExampleClose}
+          onClick={handleExampleClose}
         >
           <X />
         </Button>
