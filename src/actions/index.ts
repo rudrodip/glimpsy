@@ -1,92 +1,12 @@
 "use server";
 
-import { MODE_OPTIONS } from "@/lib/constants";
-import { ModeValue } from "@/types";
+import { AIResponse, ModeValue } from "@/types";
 import { GoogleGenAI, Modality } from "@google/genai";
 import { promptSchema } from "@/lib/schema";
 import z from "zod";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
-
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-
-export async function getResponse(prompt: string) {
-  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-
-  const contents = prompt;
-
-  const response = await ai.models.generateContent({
-    model: "gemini-2.0-flash-preview-image-generation",
-    contents: contents,
-    config: {
-      responseModalities: [Modality.TEXT, Modality.IMAGE],
-    },
-  });
-
-  if (!response.candidates?.[0]?.content) {
-    console.error("No content found in response");
-    throw new Error("No content found in response");
-  }
-
-  const result: {
-    text?: string;
-    image?: string;
-  } = {
-    text: "",
-    image: "",
-  };
-
-  for (const part of response.candidates?.[0]?.content.parts ?? []) {
-    if (part.text) {
-      result.text = part.text;
-      console.log(part.text);
-    } else if (part.inlineData) {
-      result.image = part.inlineData.data;
-    }
-  }
-
-  return result;
-}
-
-export async function generateAudio(prompt: string) {
-  try {
-    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-tts",
-      contents: [{ parts: [{ text: prompt }] }],
-      config: {
-        responseModalities: [Modality.AUDIO],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: "Kore" },
-          },
-        },
-      },
-    });
-
-    if (!response.candidates) {
-      throw new Error("No response from Gemini");
-    }
-
-    if (!response.candidates[0]?.content?.parts) {
-      throw new Error("No content from Gemini");
-    }
-
-    const content = response.candidates[0]?.content?.parts[0];
-
-    const result = content.inlineData?.data;
-    const mimeType = content.inlineData?.mimeType;
-
-    return {
-      result,
-      mimeType,
-    };
-  } catch (error) {
-    console.error("Error generating audio:", error);
-    throw error;
-  }
-}
 
 export async function generateText(prompt: string) {
   try {
@@ -146,7 +66,103 @@ export async function enhanceImagePrompt(prompt: string) {
   return response.text?.trim();
 }
 
-export async function generateResponse(data: z.infer<typeof promptSchema>) {
+export async function generateResponse(data: z.infer<typeof promptSchema>): Promise<AIResponse> {
   const { prompt, mode } = data;
-  return { data: [], text: "", mode: mode };
+  const startTime = Date.now();
+
+  const createResponse = (data?: string, error?: string): AIResponse => ({
+    mode,
+    data,
+    delta: Date.now() - startTime,
+    error
+  });
+
+  try {
+    switch (mode) {
+      case ModeValue.TEXT_TO_IMAGE: {
+        const result = await generateTextToImage(prompt);
+        return createResponse(result.image);
+      }
+      
+      case ModeValue.TEXT_TO_SPEECH: {
+        const result = await generateAudio(prompt);
+        return createResponse(result);
+      }
+      
+      case ModeValue.AUTO:
+        return createResponse(undefined, "Not Implemented");
+      
+      default:
+        return createResponse(undefined, "Invalid mode");
+    }
+  } catch (error) {
+    console.error(`Error in generateResponse for mode ${mode}:`, error);
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    return createResponse(undefined, errorMessage);
+  }
+}
+
+async function generateTextToImage(prompt: string) {
+  const response = await ai.models.generateContent({
+    model: "gemini-2.0-flash-preview-image-generation",
+    contents: prompt,
+    config: {
+      responseModalities: [Modality.IMAGE, Modality.TEXT],
+    },
+  })
+
+  if (!response.candidates?.[0]?.content) {
+    console.error("No content found in response");
+    throw new Error("No content found in response");
+  }
+
+  const result: { text?: string; image?: string } = {
+    text: "",
+    image: "",
+  };
+
+  for (const part of response.candidates?.[0]?.content.parts ?? []) {
+    if (part.text) {
+      result.text = part.text;
+    } else if (part.inlineData) { 
+      result.image = part.inlineData.data;
+    }
+  }
+
+  return result;
+}
+
+async function generateAudio(prompt: string) {
+  try {
+    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash-preview-tts",
+      contents: [{ parts: [{ text: prompt }] }],
+      config: {
+        responseModalities: [Modality.AUDIO],
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: { voiceName: "Kore" },
+          },
+        },
+      },
+    });
+
+    if (!response.candidates) {
+      throw new Error("No response from Gemini");
+    }
+
+    if (!response.candidates[0]?.content?.parts) {
+      throw new Error("No content from Gemini");
+    }
+
+    const content = response.candidates[0]?.content?.parts[0];
+    const result = content.inlineData?.data;
+    
+    return result;
+  } catch (error) {
+    console.error("Error generating audio:", error);
+    throw error;
+  }
 }
