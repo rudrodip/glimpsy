@@ -21,11 +21,15 @@ interface AIContextType {
   currentMode: ModeValue;
   isGeneratingResponse: boolean;
   response: AIResponse | null;
+  generatedOnce: boolean;
+  canStop: boolean;
   handleEnhancePrompt: () => Promise<void>;
   handleModeChange: (mode: ModeValue) => void;
   handleExampleSelect: (prompt: string, mode: ModeValue) => void;
   handleExampleClose: () => void;
+  handleStop: () => void;
   onSubmit: (data: PromptFormData) => Promise<void>;
+  resetResponse: () => void;
 }
 
 const AIContext = createContext<AIContextType | undefined>(undefined);
@@ -39,10 +43,14 @@ export function AIProvider({ children }: AIProviderProps) {
   const [isExampleSelected, setIsExampleSelected] = useState<boolean>(false);
   const [isGeneratingResponse, setIsGeneratingResponse] = useState<boolean>(false);
   const [response, setResponse] = useState<AIResponse | null>(null);
+  const [generatedOnce, setGeneratedOnce] = useState<boolean>(false);
   const currentPath = usePathname();
   const router = useRouter();
   
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const activeRequestsRef = useRef<Map<string, AbortController>>(new Map());
+  const currentGenerationIdRef = useRef<string | null>(null);
+  const currentEnhanceIdRef = useRef<string | null>(null);
 
   const form = useForm<PromptFormData>({
     resolver: zodResolver(promptSchema),
@@ -63,18 +71,40 @@ export function AIProvider({ children }: AIProviderProps) {
         sessionStorage.removeItem('pendingGeneration');
         const data = JSON.parse(pendingData) as PromptFormData;
         
+        const requestId = `pending-${Date.now()}`;
+        const abortController = new AbortController();
+        activeRequestsRef.current.set(requestId, abortController);
+        currentGenerationIdRef.current = requestId;
+        
         (async () => {
           try {
             setValue("prompt", "");
             const response = await generateResponse(data);
+            abortController.signal.throwIfAborted();
             setResponse(response);
-          } catch (error) {
-            console.error(error);
-            toast.error("Failed to generate response");
+          } catch (error: any) {
+            if (error?.name === 'AbortError') {
+              console.log('Pending generation aborted');
+            } else {
+              console.error(error);
+              toast.error("Failed to generate response");
+            }
           } finally {
             setIsGeneratingResponse(false);
+            activeRequestsRef.current.delete(requestId);
+            if (currentGenerationIdRef.current === requestId) {
+              currentGenerationIdRef.current = null;
+            }
           }
         })();
+        
+        return () => {
+          abortController.abort();
+          activeRequestsRef.current.delete(requestId);
+          if (currentGenerationIdRef.current === requestId) {
+            currentGenerationIdRef.current = null;
+          }
+        };
       }
     }
   }, [currentPath]);
@@ -88,18 +118,33 @@ export function AIProvider({ children }: AIProviderProps) {
     setEnhancing(true);
     setIsExampleSelected(false);
     
+    const requestId = `enhance-${Date.now()}`;
+    const enhanceController = new AbortController();
+    activeRequestsRef.current.set(requestId, enhanceController);
+    currentEnhanceIdRef.current = requestId;
+    
     try {
       const enhancedPrompt = await enhanceImagePrompt(currentPrompt);
+      enhanceController.signal.throwIfAborted();
+      
       if (enhancedPrompt) {
         setValue("prompt", enhancedPrompt);
       } else {
         toast.error("Failed to enhance prompt, please try again");
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to enhance prompt");
+    } catch (error: any) {
+      if (error?.name === 'AbortError') {
+        console.log('Prompt enhancement aborted');
+      } else {
+        console.error(error);
+        toast.error("Failed to enhance prompt");
+      }
     } finally {
       setEnhancing(false);
+      activeRequestsRef.current.delete(requestId);
+      if (currentEnhanceIdRef.current === requestId) {
+        currentEnhanceIdRef.current = null;
+      }
       textAreaRef.current?.focus();
     }
   };
@@ -124,9 +169,26 @@ export function AIProvider({ children }: AIProviderProps) {
     setIsExampleSelected(false);
   };
 
+  const handleStop = () => {
+    // Abort all active requests
+    for (const [requestId, controller] of activeRequestsRef.current.entries()) {
+      controller.abort();
+      activeRequestsRef.current.delete(requestId);
+    }
+    
+    // Clear current request IDs
+    currentGenerationIdRef.current = null;
+    currentEnhanceIdRef.current = null;
+    
+    setIsGeneratingResponse(false);
+    setEnhancing(false);
+    setGeneratedOnce(false);
+  };
+
   const onSubmit = async (data: PromptFormData) => {
     setIsGeneratingResponse(true);
     setResponse(null);
+    setGeneratedOnce(true);
     
     if (currentPath === "/") {
       sessionStorage.setItem('pendingGeneration', JSON.stringify(data));
@@ -134,16 +196,37 @@ export function AIProvider({ children }: AIProviderProps) {
       return;
     }
     
+    const requestId = `generate-${Date.now()}`;
+    const abortController = new AbortController();
+    activeRequestsRef.current.set(requestId, abortController);
+    currentGenerationIdRef.current = requestId;
+    
     try {
       const response = await generateResponse(data);
+      abortController.signal.throwIfAborted();
       setResponse(response);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to generate response");
+    } catch (error: any) {
+      if (error?.name === 'AbortError') {
+        console.log('Generation aborted');
+      } else {
+        console.error(error);
+        toast.error("Failed to generate response");
+      }
     } finally {
       setIsGeneratingResponse(false);
+      activeRequestsRef.current.delete(requestId);
+      if (currentGenerationIdRef.current === requestId) {
+        currentGenerationIdRef.current = null;
+      }
     }
   }
+
+  const resetResponse = () => {
+    setResponse(null);
+    setGeneratedOnce(false);
+    setValue("prompt", "");
+  }
+
   const value: AIContextType = {
     form,
     enhancing,
@@ -153,11 +236,15 @@ export function AIProvider({ children }: AIProviderProps) {
     currentMode,
     isGeneratingResponse,
     response,
+    generatedOnce,
+    canStop: isGeneratingResponse || enhancing,
     handleEnhancePrompt,
     handleModeChange,
     handleExampleSelect,
     handleExampleClose,
+    handleStop,
     onSubmit,
+    resetResponse,
   };
 
   return (
