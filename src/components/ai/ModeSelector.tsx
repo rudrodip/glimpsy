@@ -7,14 +7,17 @@ import { MODE_OPTIONS } from "@/lib/constants";
 import { useAI } from "./ai-context";
 
 export function ModeSelector() {
-  const { currentMode, handleModeChange } = useAI();
+  const { currentMode, handleModeChange, resetResponse } = useAI();
   const selectedMode = MODE_OPTIONS.find(option => option.value === currentMode);
 
   return (
     <div className="flex items-center gap-2">
       <Select
         value={currentMode}
-        onValueChange={(value) => handleModeChange(value as ModeValue)}
+        onValueChange={(value) => {
+          handleModeChange(value as ModeValue);
+          resetResponse();
+        }}
       >
         <SelectTrigger
           className="gap-2 border-none bg-transparent dark:bg-transparent hover:bg-muted shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-2"
@@ -47,4 +50,4 @@ export function ModeSelector() {
       </Select>
     </div>
   );
-} 
+}
