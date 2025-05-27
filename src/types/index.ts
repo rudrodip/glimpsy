@@ -26,3 +26,11 @@ export type SiteConfig = {
     x: string;
   }[]
 };
+
+export type AIResponse = {
+  mode: ModeValue;
+  text?: string;
+  data: string | undefined;
+  delta: number;
+  error?: string;
+}
