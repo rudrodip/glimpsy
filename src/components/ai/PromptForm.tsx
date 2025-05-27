@@ -1,29 +1,24 @@
 "use client";
 
-import { z } from "zod";
+import { motion } from "motion/react";
 import { Form } from "@/components/ui/form";
-import { promptSchema } from "@/lib/schema";
 import { AnimatedBorderCard } from "../animated-border-card";
 import { PromptInput } from "./PromptInput";
 import { ModeSelector } from "./ModeSelector";
 import { ActionButtons } from "./ActionButtons";
 import { useAI } from "./ai-context";
 import { cn } from "@/lib/utils";
-
-type PromptFormData = z.infer<typeof promptSchema>;
-
 interface PromptFormProps {
-  onSubmit: (data: PromptFormData) => Promise<void>;
   className?: string;
 }
 
-export function PromptForm({ onSubmit, className }: PromptFormProps) {
-  const { form, onFormSubmit } = useAI();
+export function PromptForm({ className }: PromptFormProps) {
+  const { form, onSubmit: onFormSubmit } = useAI();
 
   return (
-    <div className={cn("w-full max-w-3xl mx-auto", className)}>
+    <motion.div layoutId="prompt-form" id="prompt-form" className={cn("w-full max-w-3xl mx-auto", className)}>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onFormSubmit(onSubmit))} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-8">
           <AnimatedBorderCard
             className="w-full p-px rounded-[11px]"
             gradientSize={150}
@@ -38,6 +33,6 @@ export function PromptForm({ onSubmit, className }: PromptFormProps) {
           </AnimatedBorderCard>
         </form>
       </Form>
-    </div>
+    </motion.div>
   );
 } 

@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { EXAMPLES } from "@/lib/constants";
@@ -14,7 +15,7 @@ export function ExamplePrompts({ className }: { className?: string }) {
   };
 
   return (
-    <div className={cn("w-full flex items-center justify-center gap-4", className)}>
+    <motion.div layoutId="example-prompts" id="example-prompts" className={cn("w-full flex items-center justify-center gap-4", className)}>
       {EXAMPLES.map((example) => (
         <Button
           key={example.prompt}
@@ -32,13 +33,13 @@ export function ExamplePrompts({ className }: { className?: string }) {
         <Button
           type="button"
           size="sm"
-          className="p-0 aspect-square rounded-full size-8 bg-muted hover:bg-muted/50"
+          className="p-0 aspect-square rounded-full size-8 dark:bg-zinc-800 hover:dark:bg-zinc-900"
           variant="outline"
           onClick={handleExampleClose}
         >
           <X />
         </Button>
       )}
-    </div>
+    </motion.div>
   );
 } 
