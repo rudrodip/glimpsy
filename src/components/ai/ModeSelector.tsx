@@ -22,7 +22,7 @@ export function ModeSelector({ form, onModeChange }: ModeSelectorProps) {
         onValueChange={(value) => onModeChange(value as ModeValue)}
       >
         <SelectTrigger
-          className="gap-2 border-none hover:bg-muted shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-2"
+          className="gap-2 border-none bg-transparent dark:bg-transparent hover:bg-muted shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-2"
           size="sm"
         >
           <div className="flex items-center gap-2">
