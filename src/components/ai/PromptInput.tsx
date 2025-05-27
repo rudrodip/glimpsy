@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useEffect } from "react";
+import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,12 +11,11 @@ import { cn } from "@/lib/utils";
 interface PromptInputProps {
   form: UseFormReturn<{ prompt: string; mode: ModeValue }>;
   enhancing: boolean;
-  onFocus: () => void;
-  onBlur: () => void;
+  onSubmit?: () => void;
+  ref?: React.Ref<HTMLTextAreaElement>;
 }
 
-export const PromptInput = forwardRef<HTMLTextAreaElement, PromptInputProps>(
-  ({ form, enhancing, onFocus, onBlur }, ref) => {
+export const PromptInput = ({ form, enhancing, onSubmit, ref }: PromptInputProps) => {
     const { watch, setValue } = form;
     const currentPrompt = watch("prompt");
     const currentMode = watch("mode");
@@ -42,6 +41,13 @@ export const PromptInput = forwardRef<HTMLTextAreaElement, PromptInputProps>(
       return () => window.removeEventListener("keydown", handleKeyPress);
     }, [enhancing, ref, setValue, currentPrompt]);
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        onSubmit?.();
+      }
+    };
+
     return (
       <FormField
         control={form.control}
@@ -61,15 +67,14 @@ export const PromptInput = forwardRef<HTMLTextAreaElement, PromptInputProps>(
                 )}
                 disabled={enhancing}
                 placeholder={PROMPT_PLACEHOLDERS[currentMode]}
-                onFocus={onFocus}
-                onBlur={onBlur}
+                autoFocus={true}
+                onKeyDown={handleKeyDown}
               />
             </FormControl>
           </FormItem>
         )}
       />
     );
-  }
-);
+  };
 
 PromptInput.displayName = "PromptInput"; 

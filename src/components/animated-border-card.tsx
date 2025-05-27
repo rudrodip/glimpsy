@@ -11,7 +11,6 @@ interface MagicCardProps {
   gradientSize?: number;
   gradientFrom?: string;
   gradientTo?: string;
-  focused?: boolean;
 }
 
 export function AnimatedBorderCard({
@@ -20,7 +19,6 @@ export function AnimatedBorderCard({
   gradientSize = 200,
   gradientFrom = "#f472b6",
   gradientTo = "#fb7185",
-  focused = false,
 }: MagicCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(-gradientSize);
@@ -73,15 +71,13 @@ export function AnimatedBorderCard({
     mouseY.set(-gradientSize);
   }, [gradientSize, mouseX, mouseY]);
 
-  const unfocusedBackground = useMotionTemplate`
+  const background = useMotionTemplate`
     radial-gradient(${gradientSize}px circle at ${mouseX}px ${mouseY}px,
     ${gradientFrom}, 
     ${gradientTo}, 
     var(--border) 100%
     )
   `;
-
-  const focusedBackground = `linear-gradient(45deg, ${gradientFrom}, ${gradientTo}, ${gradientFrom})`;
 
   return (
     <div
@@ -91,8 +87,7 @@ export function AnimatedBorderCard({
       <motion.div
         className="pointer-events-none absolute inset-0 rounded-[inherit] bg-border group-hover:opacity-100"
         style={{
-          background: focused ? focusedBackground : unfocusedBackground,
-          opacity: focused ? 0.5 : 1,
+          background: background,
         }}
       />
       <div className="relative">{children}</div>

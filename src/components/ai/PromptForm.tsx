@@ -22,7 +22,6 @@ interface PromptFormProps {
 }
 
 export function PromptForm({ onSubmit }: PromptFormProps) {
-  const [isFocused, setIsFocused] = useState<boolean>(false);
   const [enhancing, setEnhancing] = useState<boolean>(false);
   const [isExampleSelected, setIsExampleSelected] = useState<boolean>(false);
   
@@ -96,15 +95,13 @@ export function PromptForm({ onSubmit }: PromptFormProps) {
           <AnimatedBorderCard
             className="w-full p-px rounded-[11px]"
             gradientSize={150}
-            focused={isFocused}
           >
             <div id="chatbox" className="w-full p-2 rounded-lg bg-card">
               <PromptInput
                 ref={textAreaRef}
                 form={form}
                 enhancing={enhancing}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
+                onSubmit={() => handleSubmit(handleFormSubmit)()}
               />
               <div id="menu" className="flex items-center justify-between">
                 <ModeSelector
