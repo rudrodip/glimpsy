@@ -1,19 +1,9 @@
 "use client";
 
-import { z } from "zod";
 import { PromptForm } from "./ai/PromptForm";
-import { promptSchema } from "@/lib/schema";
-import { generateResponse } from "@/actions";
 import { ExamplePrompts } from "./ai/ExamplePrompts";
-import { useRouter } from "next/navigation";
-
-type PromptFormData = z.infer<typeof promptSchema>;
 
 export default function HeroSection() {
-  const router = useRouter();
-  const handleFormSubmit = async (data: PromptFormData) => {
-    router.push("/studio");
-  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -24,7 +14,7 @@ export default function HeroSection() {
         <p className="text-foreground/80 text-sm mb-8">
           Transform your imagination into reality with Glimpsy&apos;s creative platform
         </p>
-        <PromptForm onSubmit={handleFormSubmit} />
+        <PromptForm />
         <ExamplePrompts className="mt-8" />
       </div>
     </div>

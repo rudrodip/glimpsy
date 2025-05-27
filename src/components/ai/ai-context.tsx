@@ -1,13 +1,14 @@
 "use client";
 
-import { createContext, useContext, useState, useRef, ReactNode } from "react";
+import { createContext, useContext, useState, useRef, ReactNode, useEffect } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ModeValue } from "@/types";
+import { AIResponse, ModeValue } from "@/types";
 import { promptSchema } from "@/lib/schema";
-import { enhanceImagePrompt } from "@/actions";
+import { enhanceImagePrompt, generateResponse } from "@/actions";
 import { toast } from "sonner";
+import { usePathname, useRouter } from "next/navigation";
 
 type PromptFormData = z.infer<typeof promptSchema>;
 
@@ -18,11 +19,13 @@ interface AIContextType {
   textAreaRef: React.RefObject<HTMLTextAreaElement | null>;
   currentPrompt: string;
   currentMode: ModeValue;
+  isGeneratingResponse: boolean;
+  response: AIResponse | null;
   handleEnhancePrompt: () => Promise<void>;
   handleModeChange: (mode: ModeValue) => void;
   handleExampleSelect: (prompt: string, mode: ModeValue) => void;
   handleExampleClose: () => void;
-  onFormSubmit: (onSubmit: (data: PromptFormData) => Promise<void>) => () => void;
+  onSubmit: (data: PromptFormData) => Promise<void>;
 }
 
 const AIContext = createContext<AIContextType | undefined>(undefined);
@@ -34,6 +37,10 @@ interface AIProviderProps {
 export function AIProvider({ children }: AIProviderProps) {
   const [enhancing, setEnhancing] = useState<boolean>(false);
   const [isExampleSelected, setIsExampleSelected] = useState<boolean>(false);
+  const [isGeneratingResponse, setIsGeneratingResponse] = useState<boolean>(false);
+  const [response, setResponse] = useState<AIResponse | null>(null);
+  const currentPath = usePathname();
+  const router = useRouter();
   
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -49,6 +56,29 @@ export function AIProvider({ children }: AIProviderProps) {
   const currentPrompt = watch("prompt");
   const currentMode = watch("mode");
 
+  useEffect(() => {
+    if (currentPath === "/studio") {
+      const pendingData = sessionStorage.getItem('pendingGeneration');
+      if (pendingData) {
+        sessionStorage.removeItem('pendingGeneration');
+        const data = JSON.parse(pendingData) as PromptFormData;
+        
+        (async () => {
+          try {
+            setValue("prompt", "");
+            const response = await generateResponse(data);
+            setResponse(response);
+          } catch (error) {
+            console.error(error);
+            toast.error("Failed to generate response");
+          } finally {
+            setIsGeneratingResponse(false);
+          }
+        })();
+      }
+    }
+  }, [currentPath]);
+
   const handleEnhancePrompt = async () => {
     if (currentMode !== ModeValue.TEXT_TO_IMAGE) {
       toast.error("Enhance prompt is only available for text to image mode");
@@ -62,7 +92,6 @@ export function AIProvider({ children }: AIProviderProps) {
       const enhancedPrompt = await enhanceImagePrompt(currentPrompt);
       if (enhancedPrompt) {
         setValue("prompt", enhancedPrompt);
-        textAreaRef.current?.focus();
       } else {
         toast.error("Failed to enhance prompt, please try again");
       }
@@ -71,6 +100,7 @@ export function AIProvider({ children }: AIProviderProps) {
       toast.error("Failed to enhance prompt");
     } finally {
       setEnhancing(false);
+      textAreaRef.current?.focus();
     }
   };
 
@@ -94,13 +124,26 @@ export function AIProvider({ children }: AIProviderProps) {
     setIsExampleSelected(false);
   };
 
-  const onFormSubmit = (onSubmit: (data: PromptFormData) => Promise<void>) => {
-    return async () => {
-      const data = form.getValues();
-      await onSubmit(data);
-    };
-  };
-
+  const onSubmit = async (data: PromptFormData) => {
+    setIsGeneratingResponse(true);
+    setResponse(null);
+    
+    if (currentPath === "/") {
+      sessionStorage.setItem('pendingGeneration', JSON.stringify(data));
+      router.push("/studio");
+      return;
+    }
+    
+    try {
+      const response = await generateResponse(data);
+      setResponse(response);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to generate response");
+    } finally {
+      setIsGeneratingResponse(false);
+    }
+  }
   const value: AIContextType = {
     form,
     enhancing,
@@ -108,11 +151,13 @@ export function AIProvider({ children }: AIProviderProps) {
     textAreaRef,
     currentPrompt,
     currentMode,
+    isGeneratingResponse,
+    response,
     handleEnhancePrompt,
     handleModeChange,
     handleExampleSelect,
     handleExampleClose,
-    onFormSubmit,
+    onSubmit,
   };
 
   return (

@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { useAI } from "./ai-context";
 
 export const PromptInput = () => {
-  const { form, enhancing, textAreaRef, currentPrompt, currentMode } = useAI();
+  const { form, enhancing, textAreaRef, currentPrompt, currentMode, onSubmit } = useAI();
   const { setValue } = form;
 
   useEffect(() => {
@@ -31,10 +31,10 @@ export const PromptInput = () => {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [enhancing, textAreaRef, setValue, currentPrompt]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      // Note: onSubmit functionality will be handled by the form submission
+      await onSubmit(form.getValues());
     }
   };
 
