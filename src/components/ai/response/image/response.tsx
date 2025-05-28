@@ -4,14 +4,9 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  Download,
-  Eye,
-  Share2,
-  Heart,
-  Maximize2,
+  Download, Share2, Maximize2,
   Image as ImageIcon,
-  Palette,
-  Clock
+  Palette
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AIResponse } from "@/types";
@@ -94,7 +89,7 @@ export function ImageResponse({ response, className }: ImageResponseProps) {
               <div>
                 <CardTitle className="text-lg">Image Generated</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  High-quality AI artwork • Generated in {response.delta}ms
+                  Generated in {response.delta}ms
                 </p>
               </div>
             </div>
