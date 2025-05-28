@@ -31,7 +31,7 @@ export function Navbar() {
       ref={navRef}
       className={cn(
         "sticky top-0 py-2 z-50 transition-all transform-gpu duration-300 ease-out", 
-        scrollY > THRESHOLD && "w-full max-w-5xl mx-auto rounded-xl top-2 bg-background/20 dark:bg-background/40 backdrop-blur-sm",
+        scrollY > THRESHOLD && "w-full max-w-5xl mx-auto rounded-lg md:rounded-xl top-2 bg-background/60 dark:bg-background/70 backdrop-blur-sm",
       )}
       style={scrollY < THRESHOLD ? { top: `${Math.round(scrollY / 100) * 1.5}px` } : undefined}
     >
