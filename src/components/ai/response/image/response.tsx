@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import {
   Download, Share2, Maximize2,
   Image as ImageIcon,
-  Palette
+  Palette,
+  AlertTriangle,
+  Clock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AIResponse } from "@/types";
@@ -88,9 +90,11 @@ export function ImageResponse({ response, className }: ImageResponseProps) {
               </div>
               <div>
                 <CardTitle className="text-lg">Image Generated</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Generated in {response.delta}ms
-                </p>
+                {!response.error && (
+                  <p className="text-sm text-muted-foreground">
+                    Generated in {response.delta}ms
+                  </p>
+                )}
               </div>
             </div>
 
@@ -109,49 +113,73 @@ export function ImageResponse({ response, className }: ImageResponseProps) {
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Main image display */}
-          <div className="relative group">
-            <div className="relative aspect-square w-full bg-gradient-to-br from-muted/10 to-muted/20 rounded-lg overflow-hidden border border-border/20 shadow-lg">
-              {response.data ? (
-                <>
-                  <img
-                    src={`data:image/png;base64,${response.data}`}
-                    alt="AI generated image"
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-
-                  {/* Overlay with actions */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <div className="flex gap-2">
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        onClick={handleFullscreen}
-                        className="bg-background/80 backdrop-blur-sm shadow-lg"
-                      >
-                        <Maximize2 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        onClick={handleDownload}
-                        className="bg-background/80 backdrop-blur-sm shadow-lg"
-                      >
-                        <Download className="h-4 w-4" />
-                      </Button>
-                    </div>
+          {response.error && (
+            <div className="relative">
+              <div className="aspect-square w-full bg-gradient-to-br from-destructive/5 to-destructive/10 rounded-lg border border-destructive/20 flex items-center justify-center">
+                <div className="text-center space-y-4 p-6">
+                  <div className="p-3 bg-destructive/10 rounded-full w-fit mx-auto">
+                    <AlertTriangle className="h-8 w-8 text-destructive" />
                   </div>
-                </>
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <div className="text-center space-y-2">
-                    <Palette className="h-12 w-12 text-muted-foreground mx-auto" />
-                    <p className="text-sm text-muted-foreground">No image data</p>
+                  <div className="space-y-2">
+                    <h3 className="font-medium text-destructive">Generation Failed</h3>
+                    <p className="text-sm text-muted-foreground max-w-md">
+                      {response.error}
+                    </p>
+                    {response.error.includes("Rate limit") && (
+                      <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mt-3">
+                        <Clock className="h-3 w-3" />
+                        <span>Please wait a moment before trying again</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
+          )}
+
+          {!response.error && (
+            <div className="relative group">
+              <div className="relative aspect-square w-full bg-gradient-to-br from-muted/10 to-muted/20 rounded-lg overflow-hidden border border-border/20 shadow-lg">
+                {response.data ? (
+                  <>
+                    <img
+                      src={`data:image/png;base64,${response.data}`}
+                      alt="AI generated image"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <div className="flex gap-2">
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          onClick={handleFullscreen}
+                          className="bg-background/80 backdrop-blur-sm shadow-lg"
+                        >
+                          <Maximize2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          onClick={handleDownload}
+                          className="bg-background/80 backdrop-blur-sm shadow-lg"
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="text-center space-y-2">
+                      <Palette className="h-12 w-12 text-muted-foreground mx-auto" />
+                      <p className="text-sm text-muted-foreground">No image data</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -8,22 +8,39 @@ import z from "zod";
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
-export async function generateText(prompt: string) {
-  try {
-    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+class SafeError extends Error {
+  constructor(message: string, public code: string = "UNKNOWN_ERROR") {
+    super(message);
+    this.name = "SafeError";
+  }
+}
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-pro-preview",
-      contents: [{ parts: [{ text: prompt }] }],
-      config: {
-        responseModalities: [Modality.TEXT],
-      },
-    });
-     console.log(response);
-    return response.text;
-  } catch (error) {
-    console.error("Error generating text:", error);
-    throw error;
+const MAX_GENERATIONS_PER_MINUTE = 2;
+const rateLimitMap = new Map<string, number[]>();
+
+function checkRateLimit(ip: string): { allowed: boolean; error?: SafeError } {
+  const now = Date.now();
+  const windowMs = 60 * 1000;
+  
+  if (!rateLimitMap.has(ip)) {
+    rateLimitMap.set(ip, [now]);
+    return { allowed: true };
+  }
+  
+  const timestamps = rateLimitMap.get(ip)!;
+  const windowStart = now - windowMs;
+  
+  const recentTimestamps = timestamps.filter(time => time > windowStart);
+  
+  rateLimitMap.set(ip, [...recentTimestamps, now]);
+  
+  if (recentTimestamps.length < MAX_GENERATIONS_PER_MINUTE) {
+    return { allowed: true };
+  } else {
+    return { 
+      allowed: false, 
+      error: new SafeError("Rate limit exceeded. You can generate 2 items per minute. Please wait before trying again.", "RATE_LIMIT_EXCEEDED") 
+    };
   }
 }
 
@@ -66,7 +83,7 @@ export async function enhanceImagePrompt(prompt: string) {
   return response.text?.trim();
 }
 
-export async function generateResponse(data: z.infer<typeof promptSchema>): Promise<AIResponse> {
+export async function generateResponse(data: z.infer<typeof promptSchema>, ip: string = "unknown"): Promise<AIResponse> {
   const { prompt, mode } = data;
   const startTime = Date.now();
 
@@ -76,6 +93,11 @@ export async function generateResponse(data: z.infer<typeof promptSchema>): Prom
     delta: Date.now() - startTime,
     error
   });
+
+  const rateCheck = checkRateLimit(ip);
+  if (!rateCheck.allowed && rateCheck.error) {
+    return createResponse(undefined, rateCheck.error.message);
+  }
 
   try {
     switch (mode) {

@@ -39,6 +39,17 @@ interface AIProviderProps {
   children: ReactNode;
 }
 
+function getClientId(): string {
+  if (typeof window === 'undefined') return 'server-side';
+  
+  let clientId = localStorage.getItem('client-id');
+  if (!clientId) {
+    clientId = `client-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('client-id', clientId);
+  }
+  return clientId;
+}
+
 export function AIProvider({ children }: AIProviderProps) {
   const [enhancing, setEnhancing] = useState<boolean>(false);
   const [isExampleSelected, setIsExampleSelected] = useState<boolean>(false);
@@ -79,8 +90,7 @@ export function AIProvider({ children }: AIProviderProps) {
         
         (async () => {
           try {
-            setValue("prompt", "");
-            const response = await generateResponse(data);
+            const response = await generateResponse(data, getClientId());
             abortController.signal.throwIfAborted();
             setResponse(response);
           } catch (error: any) {
@@ -203,7 +213,7 @@ export function AIProvider({ children }: AIProviderProps) {
     currentGenerationIdRef.current = requestId;
     
     try {
-      const response = await generateResponse(data);
+      const response = await generateResponse(data, getClientId());
       abortController.signal.throwIfAborted();
       setResponse(response);
     } catch (error: any) {
