@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Button } from "./ui/button";
@@ -30,6 +30,7 @@ export default function Examples({ className }: { className?: string }) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [copiedPrompts, setCopiedPrompts] = useState<Set<number>>(new Set());
+  const [isClient, setIsClient] = useState(false);
   const { setPrompt } = useAI();
   
   const categories = useMemo(() => new Set(imageExamples.map((example) => example.category)), []);
@@ -39,6 +40,10 @@ export default function Examples({ className }: { className?: string }) {
     return imageExamples.filter((example) => example.category === selectedCategory);
   }, [selectedCategory]);
 
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const displayedExamples = useMemo((): DisplayedItem[] => {
     if (selectedCategory === null) {
       const isExpanded = expandedCategories.has('all');
@@ -46,7 +51,9 @@ export default function Examples({ className }: { className?: string }) {
       if (isExpanded) {
         return imageExamples;
       } else {
-        const shuffled = [...imageExamples].sort(() => Math.random() - 0.5);
+        const shuffled = isClient 
+          ? [...imageExamples].sort(() => Math.random() - 0.5)
+          : [...imageExamples];
         const selected = shuffled.slice(0, 11);
         const result: DisplayedItem[] = [...selected];
 
@@ -63,7 +70,7 @@ export default function Examples({ className }: { className?: string }) {
     } else {
       return filteredExamples;
     }
-  }, [selectedCategory, filteredExamples, expandedCategories]);
+  }, [selectedCategory, filteredExamples, expandedCategories, isClient]);
 
   const handleSeeMore = (category: string) => {
     setExpandedCategories(prev => new Set([...prev, category]));
@@ -143,10 +150,15 @@ export default function Examples({ className }: { className?: string }) {
           return (
             <div key={index} className="group">
               <div className="aspect-square relative overflow-hidden rounded-xl bg-muted border group-hover:shadow-xl transition-all duration-300">
-                <img
+                <Image
+                  unoptimized
                   src={exampleItem.imageSrc}
                   alt={exampleItem.title}
                   className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                  width={400}
+                  height={400}
+                  placeholder="blur"
+                  blurDataURL={exampleItem.imageSrc}
                 />
                 <div className="absolute top-3 left-3">
                   <div className="bg-black/50 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
