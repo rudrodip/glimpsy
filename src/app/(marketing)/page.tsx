@@ -1,6 +1,5 @@
 import Examples from "@/components/examples";
 import Features from "@/components/features";
-import Footer from "@/components/footer";
 import GradientBackground from "@/components/gradient-background";
 import HeroSection from "@/components/hero";
 
