@@ -44,19 +44,19 @@ export default function Footer({ className }: { className?: string }) {
                   <div className="space-y-3 text-sm">
                     <Link
                       href="/#features"
-                      className="block text-foreground/70 hover:text-foreground transition-colors duration-200 hover:translate-x-1 transform"
+                      className="block text-foreground/70 hover:text-foreground transition-colors duration-200 transform"
                     >
                       Image Generation
                     </Link>
                     <Link
                       href="/#features"
-                      className="block text-foreground/70 hover:text-foreground transition-colors duration-200 hover:translate-x-1 transform"
+                      className="block text-foreground/70 hover:text-foreground transition-colors duration-200 transform"
                     >
                       Text to Speech
                     </Link>
                     <Link
                       href="/#features"
-                      className="block text-foreground/70 hover:text-foreground transition-colors duration-200 hover:translate-x-1 transform"
+                        className="block text-foreground/70 hover:text-foreground transition-colors duration-200 transform"
                     >
                       AI-Powered
                     </Link>
