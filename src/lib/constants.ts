@@ -1,9 +1,7 @@
 import { ModeValue } from "@/types";
-import { Mode } from "@google/genai";
 import {
   ImageIcon,
   AudioLines,
-  SparklesIcon,
   type LucideIcon,
 } from "lucide-react";
 
@@ -27,20 +25,11 @@ export const MODE_OPTIONS: {
       description: "Generate speech from text",
     },
   },
-  {
-    value: ModeValue.AUTO,
-    meta: {
-      label: "Auto",
-      icon: SparklesIcon,
-      description: "Auto-detect the mode",
-    },
-  },
 ];
 
 export const PROMPT_PLACEHOLDERS: Record<ModeValue, string> = {
   [ModeValue.TEXT_TO_IMAGE]: "Describe the image you want to generate",
   [ModeValue.TEXT_TO_SPEECH]: "Write the text you want to convert to speech",
-  [ModeValue.AUTO]: "Describe your imagination here",
 };
 
 export const EXAMPLES: {
@@ -64,9 +53,15 @@ export const EXAMPLES: {
       "Hey! I'm Glimpsy, your creative assistant. I'm here to help you create something amazing. What can I help you with today?",
   },
   {
-    mode: ModeValue.AUTO,
-    icon: SparklesIcon,
-    promptLabel: "List photographic styles",
-    prompt: "List popular photographic styles for image generation",
+    mode: ModeValue.TEXT_TO_IMAGE,
+    icon: ImageIcon,
+    promptLabel: "A playful cat",
+    prompt: "A playful cat with a pink bowtie and a pink collar",
+  },
+  {
+    mode: ModeValue.TEXT_TO_SPEECH,
+    icon: AudioLines,
+    promptLabel: "You are amazing",
+    prompt: "You are an amazing person, I love you",
   },
 ];

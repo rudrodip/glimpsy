@@ -89,9 +89,6 @@ export async function generateResponse(data: z.infer<typeof promptSchema>): Prom
         return createResponse(result);
       }
       
-      case ModeValue.AUTO:
-        return createResponse(undefined, "Not Implemented");
-      
       default:
         return createResponse(undefined, "Invalid mode");
     }

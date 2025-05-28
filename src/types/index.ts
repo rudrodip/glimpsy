@@ -1,7 +1,6 @@
 export enum ModeValue {
   TEXT_TO_IMAGE = "text-to-image",
   TEXT_TO_SPEECH = "text-to-speech",
-  AUTO = "auto",
 }
 
 export type SiteConfig = {
