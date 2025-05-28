@@ -21,7 +21,7 @@ export function ExamplePrompts({ className }: { className?: string }) {
   }
 
   return (
-    <motion.div layoutId="example-prompts" id="example-prompts" className={cn("w-full flex items-center justify-center gap-4", className)}>
+    <motion.div layoutId="example-prompts" id="example-prompts" className={cn("w-full flex flex-wrap items-center justify-center gap-2 md:gap-4", className)}>
       {EXAMPLES.map((example) => (
         <Button
           key={example.prompt}
