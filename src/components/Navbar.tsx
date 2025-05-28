@@ -11,12 +11,14 @@ import { navConfig } from "@/lib/config/nav.config";
 
 export function Navbar() {
   const [scrollY, setScrollY] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
-  const THRESHOLD = 500;
+  const THRESHOLD = isMobile ? 50 : 500;
 
   useEffect(() => {
     const handleScroll = () => {
       setScrollY(window.scrollY);
+      setIsMobile(window.innerWidth < 768);
     }
 
     window.addEventListener("scroll", handleScroll);
