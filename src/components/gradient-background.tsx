@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils"
 export default function GradientBackground({ className }: { className?: string }) {
   return (
     <>
-      <div className={cn("absolute inset-0 w-full overflow-x-hidden pointer-events-none -z-50", className)}>
+      <div className={cn("hidden md:block absolute inset-0 w-full overflow-x-hidden pointer-events-none -z-50", className)}>
         <div className="absolute inset-0" style={{ opacity: 1 }}>
           <div className="absolute left-1/2 h-full w-[350%] -translate-x-1/2 overflow-hidden md:w-[190%] lg:w-[190%] xl:w-[190%] 2xl:mx-auto 2xl:max-w-[2900px] flex items-start justify-center">
             <svg width="2596" height="2600" viewBox="0 0 2596 2600" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -61,7 +61,7 @@ export default function GradientBackground({ className }: { className?: string }
         </div>
       </div>
       <div
-        className="absolute inset-0 pointer-events-none -z-40"
+        className="hidden md:block absolute inset-0 pointer-events-none -z-40"
         style={{
           backgroundImage: 'url(/grain.png)',
           backgroundSize: '100px 100px',
