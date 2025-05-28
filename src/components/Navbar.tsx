@@ -63,7 +63,21 @@ export function Navbar() {
 
 const NavLink = ({ href, children }: { href: string, children: React.ReactNode }) => {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  
+  const isActive = (() => {
+    if (href.includes('#')) {
+      const [linkPath, linkHash] = href.split('#');
+      const currentHash = typeof window !== 'undefined' ? window.location.hash.slice(1) : '';
+      
+      if (linkPath === '/' || linkPath === '') {
+        return pathname === '/' && currentHash === linkHash;
+      }
+      
+      return pathname === linkPath && currentHash === linkHash;
+    }
+    
+    return pathname === href;
+  })();
 
   return (
     <Link href={href} className={cn("text-sm font-medium text-muted-foreground hover:text-foreground transition-colors", isActive && "text-foreground")}>
