@@ -7,12 +7,12 @@ export default function Socials() {
     <div className="flex items-center gap-2">
       <Button size="icon" variant="ghost">
         <a href={siteConfig.socials.github} target="_blank" rel="noopener noreferrer">
-          <Icons.Github />
+          <Icons.Github className="size-4" />
         </a>
       </Button>
       <Button size="icon" variant="ghost">
         <a href={siteConfig.socials.x} target="_blank" rel="noopener noreferrer">
-          <Icons.X />
+          <Icons.X className="size-3" />
         </a>
       </Button>
     </div>
