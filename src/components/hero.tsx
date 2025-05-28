@@ -11,7 +11,7 @@ export default function HeroSection() {
         <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold font-heading tracking-tighter mb-2">
           Glimpse Your <span className="primary-gradient gradient-text gradient-flow-left-to-right">Imagination</span>
         </h1>
-        <p className="text-foreground/80 text-sm mb-8">
+        <p className="text-foreground/80 text-xs md:text-sm mb-8 text-center">
           Transform your imagination into reality with Glimpsy&apos;s creative platform
         </p>
         <PromptForm />
