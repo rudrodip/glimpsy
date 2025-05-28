@@ -41,6 +41,27 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-inter);
+  --shine-degree: 120deg;
+  --shine-color: rgba(3 105 161 / 0.5);
+  --shine-effect: linear-gradient(
+    var(--shine-degree),
+    transparent,
+    var(--shine-color),
+    transparent
+  );
+  --shine-transition: all 0.75s ease-in-out;
+  --animate-shiny-text: shiny-text 8s infinite;
+  @keyframes shiny-text {
+  0%, 90%, 100% {
+    background-position: calc(-100% - var(--shiny-width)) 0;
+    }
+  30%, 60% {
+    background-position: calc(100% + var(--shiny-width)) 0;
+    }
+  }
   --animate-gradient: gradient 8s linear infinite;
   @keyframes gradient {
   to {
@@ -82,6 +103,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --enhance-gradient-first: #be185d;
+  --enhance-gradient-second: #7c3aed;
+  --enhance-gradient-third: #be123c;
 }
 
 .dark {
@@ -116,6 +140,13 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --enhance-gradient-first: #f472b6;
+  --enhance-gradient-second: #c084fc;
+  --enhance-gradient-third: #fb7185;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 @layer base {
@@ -125,6 +156,16 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+::-moz-selection {
+  color: var(--background);
+  background: var(--foreground);
+}
+
+::selection {
+  color: var(--background);
+  background: var(--foreground);
 }
 
 /* Animation Keyframes */
@@ -184,4 +225,96 @@
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+.primary-gradient {
+  @apply bg-linear-to-r from-pink-400 dark:from-pink-500 via-fuchsia-400 dark:via-fuchsia-500 to-rose-400 dark:to-rose-500;
+}
+
+
+.gradient-text {
+  @apply text-transparent bg-clip-text;
+}
+
+@keyframes gradient-flow-left-to-right {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+.gradient-flow-left-to-right {
+  background-size: 200% 200%;
+  animation: gradient-flow-left-to-right 3s ease infinite alternate;
+}
+
+.enhance-gradient {
+  position: relative;
+  background: linear-gradient(
+    90deg,
+    var(--foreground) 0%,
+    var(--foreground) 10%,
+    var(--enhance-gradient-first) 30%,
+    var(--enhance-gradient-second) 50%,
+    var(--enhance-gradient-third) 70%,
+    var(--foreground) 90%,
+    var(--foreground) 100%
+  );
+}
+
+.enhance-gradient-text {
+  @apply text-transparent bg-clip-text;
+}
+
+@keyframes enhance-gradient-animation {
+  0% { background-position: 100% 0 }
+  100% { background-position: -100% 0 }
+}
+
+.enhance-gradient-animation {
+  background-size: 200% 100%;
+  animation: enhance-gradient-animation 1s linear infinite;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 5px;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+::view-transition-group(root) {
+  animation-timing-function: var(--expo-out);
+}
+
+::view-transition-new(root) {
+  mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><filter id="blur"><feGaussianBlur stdDeviation="2"/></filter></defs><circle cx="20" cy="40" r="18" fill="white" filter="url(%23blur)"/></svg>') bottom center / 0 no-repeat;
+  mask-origin: content-box;
+  animation: scale 0.8s;
+  transform-origin: bottom center;
+}
+
+::view-transition-old(root),
+  .dark::view-transition-old(root) {
+  animation: scale 0.8s;
+  transform-origin: bottom center;
+  z-index: -1;
+}
+
+@keyframes scale {
+  to {
+    mask-size: 250vmax;
+  }
 }

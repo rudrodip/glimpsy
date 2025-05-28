@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ✨ Glimpsy
 
-## Getting Started
+![Glimpsy](./public/og.png)
 
-First, run the development server:
+> **Your Creative Assistant** - Transform ideas into stunning visuals and natural speech with AI
+
+**Glimpsy** is a creative assistant that allows you to create images and text-to-speech. Built for creators who value quality, speed, and simplicity.
+
+## 🚀 Features
+
+- **🎨 AI Image Generation** - Transform text into stunning visuals in seconds
+- **🎙️ Text-to-Speech** - Convert any text into natural-sounding speech
+- **⚡ Lightning Fast** - Generate content in seconds, not minutes
+- **🔒 Privacy First** - Your creations are yours - we don't store or track
+- **📱 Modern Interface** - Beautiful, responsive design that works everywhere
+- **💾 Easy Export** - Download in high quality formats instantly
+
+## 🌟 Perfect For
+
+- **Content Creation** - Social media, blogs, marketing materials
+- **Accessibility** - Making content more inclusive with audio
+- **Creative Projects** - Bringing artistic visions to life
+- **Business Growth** - Scale content production efficiently
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js, React, TypeScript
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **UI Components**: shadcn/ui
+- **Package Manager**: Bun
+
+## 🚦 Getting Started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+# Clone the repository
+git clone https://github.com/sachigoyal/glimpsy.git
+
+# Navigate to project
+cd glimpsy
+
+# Install dependencies
+bun install
+
+# Start development server
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎯 Usage
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Describe Your Vision** - Type what you want to create in natural language
+2. **AI Magic Happens** - Advanced AI models process your request in seconds
+3. **Enjoy & Share** - Download and use your high-quality creations
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🌐 Live Demo
 
-## Learn More
+Visit [glimpsy.sachii.dev](https://glimpsy.sachii.dev) to try it yourself - no signup required!
 
-To learn more about Next.js, take a look at the following resources:
+## 👥 Contributors
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **[Sachi Goyal](https://sachii.dev)** - [@sachigoyal](https://x.com/sachigoyal27)
+- **[Rudro](https://rdsx.dev)** - [@rudrodip](https://x.com/rds_agi)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📄 License
 
-## Deploy on Vercel
+[MIT License](./LICENSE)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<div align="center">
+
+**[🌟 Try Glimpsy Now](https://glimpsy.sachii.dev)** • **[🐛 Report Issues](https://github.com/sachigoyal/glimpsy/issues)** • **[💬 Follow Updates](https://x.com/sachigoyal27)**
+
+*Built with ❤️ for creators worldwide*
+
+</div>
