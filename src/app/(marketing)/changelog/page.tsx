@@ -4,7 +4,6 @@ import { motion } from "motion/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AnimatedBorderCard } from "@/components/animated-border-card";
-import GradientBackground from "@/components/gradient-background";
 import { 
   SparklesIcon, 
   PlusIcon, 
@@ -30,7 +29,7 @@ export default function ChangelogPage() {
   const changelog: ChangelogEntry[] = [
     {
       version: "0.0.1",
-      date: "2024-12-20",
+      date: "2025-05-28",
       type: "major",
       changes: [
         { type: "added", description: "AI-powered text-to-image generation with high-quality output" },
@@ -59,11 +58,11 @@ export default function ChangelogPage() {
   const getTypeBadge = (type: string) => {
     switch (type) {
       case "major":
-        return <Badge variant="default" className="bg-red-500 hover:bg-red-600">Major</Badge>;
+        return <Badge variant="default" className="bg-rose-400 hover:bg-rose-500">Major</Badge>;
       case "minor":
-        return <Badge variant="default" className="bg-blue-500 hover:bg-blue-600">Minor</Badge>;
+        return <Badge variant="default" className="bg-sky-400 hover:bg-sky-500">Minor</Badge>;
       case "patch":
-        return <Badge variant="default" className="bg-green-500 hover:bg-green-600">Patch</Badge>;
+        return <Badge variant="default" className="bg-green-400 hover:bg-green-500">Patch</Badge>;
       default:
         return <Badge variant="secondary">Unknown</Badge>;
     }
