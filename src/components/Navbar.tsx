@@ -1,12 +1,41 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import ModeToggle from "./theme-toggle";
 import Image from "next/image";
 import Socials from "@/components/socials";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { navConfig } from "@/lib/config/nav.config";
 
 export function Navbar() {
+  const [scrollY, setScrollY] = useState(0);
+  const navRef = useRef<HTMLDivElement>(null);
+  const THRESHOLD = 500;
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    }
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    }
+  }, []);
+
   return (
-    <div className="sticky top-0 p-4 z-50">
-      <div className="flex items-center justify-between h-full w-full max-w-7xl mx-auto px-4">
+    <div 
+      ref={navRef}
+      className={cn(
+        "sticky top-0 py-2 z-50 transition-all transform-gpu duration-300 ease-out", 
+        scrollY > THRESHOLD && "w-full max-w-5xl mx-auto rounded-xl top-2 bg-background/20 dark:bg-background/40 backdrop-blur-sm",
+      )}
+      style={scrollY < THRESHOLD ? { top: `${Math.round(scrollY / 100) * 1.5}px` } : undefined}
+    >
+      <div className={cn("flex items-center justify-between h-full w-full container mx-auto transition-all transform-gpu duration-300 ease-out", scrollY > THRESHOLD && "max-w-5xl px-4")}>
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2 group">
             <Image src="/favicon.png" alt="Glimpsy" width={20} height={20} />
@@ -15,18 +44,11 @@ export function Navbar() {
             </span>
           </Link>
           <div className="hidden sm:flex items-center gap-4">
-            <Link
-              href="/about"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              About
-            </Link>
-            <Link
-              href="/examples"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Examples
-            </Link>
+            {navConfig.map((item) => (
+              <NavLink key={item.href} href={item.href}>
+                {item.label}
+              </NavLink>
+            ))}
           </div>
         </div>
 
@@ -37,4 +59,15 @@ export function Navbar() {
       </div>
     </div>
   );
+}
+
+const NavLink = ({ href, children }: { href: string, children: React.ReactNode }) => {
+  const pathname = usePathname();
+  const isActive = pathname === href;
+
+  return (
+    <Link href={href} className={cn("text-sm font-medium text-muted-foreground hover:text-foreground transition-colors", isActive && "text-foreground")}>
+      {children}
+    </Link>
+  )
 }
