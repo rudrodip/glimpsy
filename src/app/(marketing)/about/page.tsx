@@ -7,10 +7,7 @@ import {
   ImageIcon,
   AudioLinesIcon,
   SparklesIcon,
-  GithubIcon,
-  TwitterIcon,
-  ExternalLinkIcon,
-  HeartIcon,
+  GithubIcon, HeartIcon,
   ZapIcon,
   PaletteIcon,
   MicIcon,
@@ -25,14 +22,13 @@ import {
   RocketIcon,
   WandIcon,
   CameraIcon,
-  Globe,
+  Globe
 } from "lucide-react";
 import { motion } from "motion/react";
 import { AnimatedBorderCard } from "@/components/animated-border-card";
 import GradientBackground from "@/components/gradient-background";
 import { siteConfig } from "@/lib/config/site.config";
 import Link from "next/link";
-import Image from "next/image";
 import { Icons } from "@/components/icons";
 
 export default function AboutPage() {
@@ -98,7 +94,6 @@ export default function AboutPage() {
       <GradientBackground className="opacity-30" />
       
       <div className="relative max-w-5xl mx-auto px-6 py-16 md:py-24">
-        {/* Hero Section */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -212,7 +207,7 @@ export default function AboutPage() {
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <CheckIcon className="h-4 w-4 text-green-600" />
-                    <span>Multiple voice options and languages</span>
+                    <span>Adjust volume</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <CheckIcon className="h-4 w-4 text-green-600" />
@@ -402,7 +397,7 @@ export default function AboutPage() {
               Meet the <span className="primary-gradient gradient-text gradient-flow-left-to-right">Team</span>
             </h2>
             <p className="text-lg text-foreground/70">
-              The passionate developers behind {siteConfig.name}
+              The developers behind {siteConfig.name}
             </p>
           </div>
           
@@ -432,7 +427,7 @@ export default function AboutPage() {
                       <Button variant="outline" size="sm" asChild>
                         <a href={contributor.x} target="_blank" rel="noopener noreferrer">
                           <Icons.X className="size-3" />
-                          Twitter
+                          X (Twitter)
                         </a>
                       </Button>
                       <Button variant="outline" size="sm" asChild>
