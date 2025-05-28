@@ -30,6 +30,7 @@ interface AIContextType {
   handleStop: () => void;
   onSubmit: (data: PromptFormData) => Promise<void>;
   resetResponse: () => void;
+  setPrompt: (prompt: string) => void;
 }
 
 const AIContext = createContext<AIContextType | undefined>(undefined);
@@ -227,6 +228,10 @@ export function AIProvider({ children }: AIProviderProps) {
     setValue("prompt", "");
   }
 
+  const setPrompt = (prompt: string) => {
+    setValue("prompt", prompt);
+  }
+
   const value: AIContextType = {
     form,
     enhancing,
@@ -245,6 +250,7 @@ export function AIProvider({ children }: AIProviderProps) {
     handleStop,
     onSubmit,
     resetResponse,
+    setPrompt,
   };
 
   return (
